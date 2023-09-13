@@ -1,42 +1,41 @@
-LED Controller for Arduino
-This npm package provides a simple interface to control an LED connected to an Arduino. With just a few lines of code, you can make the LED blink.
+# Arduino LED Controller
+このモジュールを使用すると、Node.jsを使用してArduino上のLEDを制御できます
 
-Installation
-bash
-Copy code
-npm install @s1f10210254/wisra-zu
-Usage
-Here's a basic example:
+### install
+```
+npm install s1f10210254/wisra-zu
+```
 
-typescript
-Copy code
-import { LED } from '@s1f10210254/wisra-zu';
+### 使用方法
+・最初にArduinoのCOMポートをセットアップします。デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
 
-const led = LED(13);
-led.blink();
-In the above code, the LED connected to pin 13 of the Arduino will start blinking.
+```
+import { setup, LED } from 'your-package-name';
 
-Configuration
-By default, the package connects to the Arduino via the COM4 port. Make sure to modify the port settings according to your system's configuration.
+// COMポートをセットアップする
+setup('COM4');  // 例: COM4に変更する場合
+```
 
-API
-LED(pin: number): LEDInstance
-Creates an instance of the LED controller for the given pin.
+LED を制御するためのインスタンスを作成します
+```
+const led = LED(13);  // ピン13を制御するインスタンスを作成します。
+```
 
-Arguments:
+LEDを制御する
+・LEDを点滅させる
+```
+led.blink(); // デフォルトの1秒間隔で点滅します。
+led.blink(2000); // 2秒間隔で点滅します。
+```
 
-pin (number): The Arduino pin where the LED is connected.
-Returns:
+・LEDをオンにする
+```
+led.on();
+```
 
-An LEDInstance with methods to control the LED.
-LEDInstance.blink()
-Makes the LED blink at a 1-second interval.
+・LEDをオフにする
+```
+led.off();
+```
 
-Troubleshooting
-If you encounter any issues:
-
-Ensure your Arduino is connected and the correct port is set in the code.
-Check your Arduino's baud rate. The default is set to 57600.
-Ensure the LED is properly connected to the specified pin.
-Contributing
-Feel free to open issues or submit pull requests if you have improvements or fixes.
+**注意** 'on'や'blink'メソッドを使用すると、エンターキーを押すまでLEDの制御が継続されます。
