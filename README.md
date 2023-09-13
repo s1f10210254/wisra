@@ -1,5 +1,5 @@
 # wisra-zu
-このモジュールを使用すると、Node.jsを使用してArduino上のLEDを制御できます
+このモジュールを使用すると、Node.jsを使用してArduino上のIOTデバイスを制御できます
 
 ### install
 ```
@@ -7,10 +7,11 @@ npm install s1f10210254/wisra-zu
 ```
 
 ### 使用方法
-・最初にArduinoのCOMポートをセットアップします。デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
+最初にArduinoのCOMポートをセットアップします。  
+デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
 
 ```
-import { setup, LED } from 'your-package-name';
+import { setup, LED } from 's1f10210254/wisra-zu';
 
 // COMポートをセットアップする
 setup('COM4');  // 例: COM4に変更する場合
