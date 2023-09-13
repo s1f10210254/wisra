@@ -1,4 +1,4 @@
-# Arduino LED Controller
+# wisra-zu
 このモジュールを使用すると、Node.jsを使用してArduino上のLEDを制御できます
 
 ### install
@@ -21,19 +21,19 @@ LED を制御するためのインスタンスを作成します
 const led = LED(13);  // ピン13を制御するインスタンスを作成します。
 ```
 
-LEDを制御する
-・LEDを点滅させる
+LEDを制御する  
+**LEDを点滅させる**
 ```
 led.blink(); // デフォルトの1秒間隔で点滅します。
 led.blink(2000); // 2秒間隔で点滅します。
 ```
 
-・LEDをオンにする
+**LEDをオンにする**
 ```
 led.on();
 ```
 
-・LEDをオフにする
+**LEDをオフにする**
 ```
 led.off();
 ```
