@@ -1,4 +1,4 @@
-import { error } from "console";
+import * as readline from "readline"
 import { SerialPort } from "serialport"
 
 let path: string = 'COM3';
@@ -7,59 +7,117 @@ export function setup(mypath: string){
     path = mypath;
 }
 
-export function LED(pinNumber: number) {
-    const port = new SerialPort({path, baudRate: 57600});
+export function LED(pinNumber: number){
+    const port = new SerialPort({path ,baudRate: 57600});
 
     const identifierCode = 0x90;
     let isOn = false;
-    let blinkInterval: NodeJS.Timeout | null = null;
+    let blinkingInterval: NodeJS.Timeout | null = null
 
-    function sendToLED(turnOn: boolean) {
-        const bufferValue = turnOn ? (1 << (pinNumber & 0x07)) : 0x00;
-        const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
-        port.write(buffer, (err) => {
-            if(err) return console.error('Error writing to port: ', err.message);
-            console.log(`Sent message to turn ${turnOn ? 'on' : 'off'} LED at pin ${pinNumber}`);
-        });
-    }
-
-    function on(): void {
-        if (blinkInterval) clearInterval(blinkInterval);
-        sendToLED(true);
-    }
-
-    function off(): void {
-        if (blinkInterval) clearInterval(blinkInterval);
-        sendToLED(false);
-    }
-
-    function stop(): void {
-        if (blinkInterval) clearInterval(blinkInterval);
-    }
-
-    function blink(interval: number = 1000): void {
-        setTimeout(() => {
-            if (blinkInterval) clearInterval(blinkInterval);
-            blinkInterval = setInterval(() => {
-                isOn = !isOn;
-                sendToLED(isOn);
-            }, interval);
-        }, 2000);
-    }
-
-    port.on('open', () => {
+    port.on('open', ()=>{
         console.log('Arduino connected');
-        blink();
     });
 
-    port.on('error', (err) => {
+    port.on('error', (err)=>{
         console.error('Error', err);
     });
 
+
+    function keepConsoleOpen(){
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout
+        })
+
+        console.log('Press ENTER to exit...');
+
+        rl.on('line', ()=>{
+            if(blinkingInterval){
+                clearInterval(blinkingInterval);
+            }
+            offProcess();
+            rl.close();
+            process.exit(0);
+        })
+    }
+    function setPinOutput(){
+        const setPinModeOutput = Buffer.from([0xF4, 13, 1]);
+        port.write(setPinModeOutput);
+    }
+
+    // function blink(interval: number = 1000):void{
+    //     setTimeout(()=>{
+    //         setInterval(()=>{
+    //             isOn = !isOn;
+
+    //             const bufferValue = isOn ? 1 <<(pinNumber & 0x07) : 1 << (0x00);
+    //             const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
+    //             port.write(buffer, (err)=>{
+    //                 if(err){
+    //                     return console.error('Error writing to port: ', err.message);
+    //                 }
+    //                 console.log(`LED ${isOn ? 'on' : 'off'} at pin ${pinNumber}`);
+    //             })
+    //         },interval)
+    //     },2000)
+    //     keepConsoleOpen();
+    // }
+
+    function blink(interval: number = 1000):void{
+        setPinOutput();
+
+        setTimeout(()=>{
+            setInterval(()=>{
+                isOn ? offProcess() : onProcess();
+            },interval)
+        },2000);
+        keepConsoleOpen()
+    }
+
+    const onProcess = ()=>{
+        isOn = true;
+        const bufferValue = 1 << (pinNumber & 0x07);
+        const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
+        port.write(buffer, (err)=>{
+            if(err){
+                return console.error('Error writing to port: ', err.message);
+            }
+            console.log(`LED on at pin ${pinNumber}`);
+        })
+    }
+
+    const offProcess = ()=>{
+        isOn = false;
+        const bufferValue = 1 << (0x00);
+        const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
+        port.write(buffer, (err) => {
+            if (err) {
+                return console.error('Error writing to port: ', err.message);
+            }
+            console.log(`LED off at pin ${pinNumber}`);
+        });
+    }
+
+    function on(){
+        setPinOutput()
+
+        setTimeout(()=>{
+            onProcess()
+        },2000)
+        keepConsoleOpen()
+    }
+
+    function off(){
+        setPinOutput();
+        offProcess();
+    }
+
+
+    
+
     return {
+        blink,
         on,
         off,
-        stop,
-        blink
     }
 }
