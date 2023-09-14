@@ -45,24 +45,6 @@ export function LED(pinNumber: number){
         port.write(setPinModeOutput);
     }
 
-    // function blink(interval: number = 1000):void{
-    //     setTimeout(()=>{
-    //         setInterval(()=>{
-    //             isOn = !isOn;
-
-    //             const bufferValue = isOn ? 1 <<(pinNumber & 0x07) : 1 << (0x00);
-    //             const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
-    //             port.write(buffer, (err)=>{
-    //                 if(err){
-    //                     return console.error('Error writing to port: ', err.message);
-    //                 }
-    //                 console.log(`LED ${isOn ? 'on' : 'off'} at pin ${pinNumber}`);
-    //             })
-    //         },interval)
-    //     },2000)
-    //     keepConsoleOpen();
-    // }
-
     function blink(interval: number = 1000):void{
         setPinOutput();
 
@@ -119,5 +101,48 @@ export function LED(pinNumber: number){
         blink,
         on,
         off,
+    }
+}
+
+export function SERVO(pinNumber: number){
+    const port = new SerialPort({path ,baudRate: 57600});
+    
+    port.on("open", ()=>{
+        console.log("Arduino connected");
+    });
+
+    port.on("error", (err)=>{
+        console.error("Error", err.message);
+    })
+    function configureServo(minPulse: number, maxPulse:number){
+        const commandByte = 0x70;
+        const dataByte = [
+            pinNumber,
+            minPulse & 0x7F, (minPulse >> 7) & 0x7F,
+            maxPulse & 0x7F, (maxPulse >> 7) & 0x7F,
+        ]
+
+        const buffer = Buffer.from([commandByte, ...dataByte]);
+        port.write(buffer);
+    }
+
+    function setAngle (angle : number){
+        if (angle < 0) angle = 0;
+        if (angle > 180) angle = 180;
+
+        const commandByte = 0xE0 | (pinNumber & 0x0F);
+        const dataByte = [(angle & 0x7F), (angle >> 7) & 0x7F];
+
+        const buffer = Buffer.from([commandByte, ...dataByte]);
+        port.write(buffer, (err)=>{
+            if(err){
+                return console.error("Error writing to port: ",err.message);
+            }
+            console.log(`Set Servo at pin ${pinNumber} to angle ${angle} degrees`);
+        });
+    }
+    return {
+        configureServo,
+        setAngle
     }
 }
