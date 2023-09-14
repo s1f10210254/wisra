@@ -3,15 +3,14 @@
 
 
 ### 使用方法
-1,ArduinoのIDEから
+**1,ArduinoのIDEの設定**
 ```
 File > Examples > Firmata > StandardFirmata
 ```
 にアクセスしてコードをArduinoにアップロードします
 
-2,node.jsの設定
+**2,install**
 ```
-npm install serialport
 npm install wisra-zu
 ```
 を行いモジュールのインストールを行います。
