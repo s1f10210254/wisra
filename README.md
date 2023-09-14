@@ -17,7 +17,8 @@ npm install wisra-zu
 
 
 
-### 最初にArduinoのCOMポートをセットアップします。  デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
+### 最初にArduinoのCOMポートをセットアップします。
+*デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
 
 ```
 import { setup, LED } from 'wisra-zu';
@@ -45,7 +46,7 @@ led.off();
 
 **LEDを点滅させる**
 ```
-led.blink(); // デフォルトの1秒間隔で点滅します。
+led.blink(); // デフォルトでは1秒間隔で点滅します。
 led.blink(2000); // 2秒間隔で点滅します。
 ```
 
