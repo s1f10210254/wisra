@@ -1,14 +1,24 @@
 # wisra-zu
-このモジュールを使用すると、Node.jsを使用してArduino上のIOTデバイスを制御できます
+このモジュールを使用すると、シリアル通信を介して、Node.jsからArduino上のfirmataに信号を送り、IOTデバイスを制御することができます。
 
-### install
-```
-npm install wisra-zu
-```
 
 ### 使用方法
-最初にArduinoのCOMポートをセットアップします。  
-デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
+1,ArduinoのIDEから
+```
+File > Examples > Firmata > StandardFirmata
+```
+にアクセスしてコードをArduinoにアップロードします
+
+2,node.jsの設定
+```
+npm install serialport
+npm install wisra-zu
+```
+を行いモジュールのインストールを行います。
+
+
+
+### 最初にArduinoのCOMポートをセットアップします。  デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
 
 ```
 import { setup, LED } from 'wisra-zu';
