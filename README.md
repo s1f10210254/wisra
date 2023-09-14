@@ -3,7 +3,7 @@
 
 ### install
 ```
-npm install s1f10210254/wisra-zu
+npm install wisra-zu
 ```
 
 ### 使用方法
@@ -11,7 +11,7 @@ npm install s1f10210254/wisra-zu
 デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
 
 ```
-import { setup, LED } from 's1f10210254/wisra-zu';
+import { setup, LED } from 'wisra-zu';
 
 // COMポートをセットアップする
 setup('COM4');  // 例: COM4に変更する場合
