@@ -1,5 +1,5 @@
 /node_modules
-/src
+src/sample.ts
 /tsconfig.json
 /test.ts
 /dist

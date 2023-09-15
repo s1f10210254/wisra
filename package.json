@@ -1,6 +1,6 @@
 {
   "name": "wisra-zu",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A simple library to control LEDs via serialport",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
