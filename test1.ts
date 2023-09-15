@@ -3,7 +3,7 @@ import { SerialPort } from "serialport";
 const path = 'COM4'
 const port = new SerialPort({path, baudRate:57600});
 
-// const pinNumber = 9;
+const pinNumber = 9;
 // const setServoPinmode =()=>{
 //     const PIN_MODE_SERVO = 0x04;
 //     const SET_PIN_MODE = 0xF4;
@@ -70,21 +70,54 @@ const port = new SerialPort({path, baudRate:57600});
 //     console.error('Error', err);
 // });
 
-// const SerialPort = require("serialport");
-// const port = new SerialPort("COM4", { baudRate: 57600 });
 
-port.on('open', function() {
-    console.log("Serial port opened");
+// port.on('open', function() {
+//     console.log("Serial port opened");
 
-    // サーボの初期設定
-    const servoInitBuffer = Buffer.from([0xf0, 0x70, 0x09, 0x20, 0x04, 0x60, 0x12, 0xf7]);
-    port.write(servoInitBuffer);
-    console.log("Sent servo initialization buffer");
+//     // サーボの初期設定
+//     const servoInitBuffer = Buffer.from([0xf0, 0x70, 0x09, 0x20, 0x04, 0x60, 0x12, 0xf7]);
+//     port.write(servoInitBuffer);
+//     console.log("Sent servo initialization buffer");
 
-    setTimeout(() => {
-        // サーボの角度を0度に設定
-        const servoAngleBuffer = Buffer.from([0xe9, 0x00, 0x00]);
-        port.write(servoAngleBuffer);
-        console.log("Set servo angle to 0");
-    }, 2000);
+//     setTimeout(() => {
+//         // サーボの角度を0度に設定
+//         const servoAngleBuffer = Buffer.from([0xe9, 0x00, 0x00]);
+//         port.write(servoAngleBuffer);
+//         console.log("Set servo angle to 0");
+//     }, 2000);
+// });
+
+
+port.on('open', () => {
+    console.log('Port COM4 opened');
+
+    // RTS信号をクリア
+    port.set({ rts: false }, (err) => {
+        if (err) console.error('Error clearing RTS:', err);
+    });
+
+    // DTRをセット
+    port.set({ dtr: true }, (err) => {
+        if (err) console.error('Error setting DTR:', err);
+    });
+
+    // データを書き込み
+    let data = Buffer.from([0xf0, 0x70, 0x09, 0x20, 0x04, 0x60, 0x12, 0xf7]);
+    setTimeout(()=>{
+        port.write(data, (err) => {
+            if (err) console.error('Error writing data:', err);
+        });
+    
+    },2000)
+    
+    // 他の設定やコマンドを追加...
+
+    // ポートを閉じる
+    // port.close((err) => {
+    //     if (err) console.error('Error closing port:', err);
+    // });
 });
+
+// port.on('error', (err) => {
+//     console.error('Serial port error:', err);
+// });
