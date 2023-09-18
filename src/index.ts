@@ -1,161 +1,62 @@
-import * as readline from "readline"
-import { SerialPort } from "serialport"
+import { SerialPort } from "serialport";
+import { setPinServo } from "../src/servo/setPinServo";
+import { findArduinoPath } from "./wisra/findArduinoPath";
+import { setServoAngle } from "../src/servo/setServoAngle";
+import { delay } from "./wisra/delay";
+import {setLedState} from "./components/LED/led"
 
-
-let path: string = 'COM3';
-
-export function setup(mypath: string){
-    path = mypath;
-}
-
-export function LED(pinNumber: number){
-    const port = new SerialPort({path ,baudRate: 57600});
-
-    const identifierCode = 0x90;
-    let isOn = false;
-    let blinkingInterval: NodeJS.Timeout | null = null
-
-    port.on('open', ()=>{
-        console.log('Arduino connected');
-    });
-
-    port.on('error', (err)=>{
-        console.error('Error', err);
-    });
-
-
-    function keepConsoleOpen(){
-        const rl = readline.createInterface({
-            input: process.stdin,
-            output: process.stdout
-        })
-
-        console.log('Press ENTER to exit...');
-
-        rl.on('line', ()=>{
-            if(blinkingInterval){
-                clearInterval(blinkingInterval);
-            }
-            offProcess();
-            rl.close();
-            process.exit(0);
-        })
-    }
-    function setPinOutput(){
-        const setPinModeOutput = Buffer.from([0xF4, 13, 1]);
-        port.write(setPinModeOutput);
-    }
-
-    function blink(interval: number = 1000):void{
-        setPinOutput();
-
-        setTimeout(()=>{
-            setInterval(()=>{
-                isOn ? offProcess() : onProcess();
-            },interval)
-        },2000);
-        keepConsoleOpen()
-    }
-
-    const onProcess = ()=>{
-        isOn = true;
-        const bufferValue = 1 << (pinNumber & 0x07);
-        const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
-        port.write(buffer, (err)=>{
-            if(err){
-                return console.error('Error writing to port: ', err.message);
-            }
-            console.log(`LED on at pin ${pinNumber}`);
-        })
-    }
-
-    const offProcess = ()=>{
-        isOn = false;
-        const bufferValue = 1 << (0x00);
-        const buffer = Buffer.from([identifierCode + (pinNumber >> 3), bufferValue, 0x00]);
-        port.write(buffer, (err) => {
-            if (err) {
-                return console.error('Error writing to port: ', err.message);
-            }
-            console.log(`LED off at pin ${pinNumber}`);
-        });
-    }
-
-    function on(){
-        // setTimeout(()=>{
-        //     setPinOutput()
-        // },2000)
-        // setPinOutput()
-
-        setTimeout(()=>{
-            onProcess()
-        },2000)
-        keepConsoleOpen()
-    }
-
-    function off(){
-        setPinOutput();
-        offProcess();
-    }
-
-
+const setup = async () => {
+    console.log(1)
+    const path = await findArduinoPath()
+    if (!path){throw new Error("Arduino path not found!")}
+    const port = new SerialPort({ path, baudRate: 57600 });
     
+    let onDataReady: (() => void) | null = null;
+    const dataReady = new Promise<void>(resolve => {
+        console.log(3)
+      onDataReady = resolve;
+    });
 
+    port.on('data', (data) => {
+        console.log('Data:', data)
+        if (onDataReady) {
+           onDataReady();
+         }
+        })
+
+        await dataReady
+
+  const servo = (pin: number) => {
     return {
-        blink,
-        on,
-        off,
-    }
+      lotate: async (angle: number) => {
+        console.log(4)
+        await setPinServo(pin, port);
+        await setServoAngle(pin, angle, port);
+
+        console.log(`Rotating to ${angle} degrees`);
+        const DELAY_TIME = 290 +(Math.abs(angle - 90) * 2.5);
+        await delay(DELAY_TIME);
+      }
+    };
+  };
+  
+  const led = (pin: number) => {
+    return {
+      on: async () => {
+        await dataReady;
+        await setLedState(pin, true, port);
+      },
+      off: async () => {
+        await dataReady;
+        await setLedState(pin, false, port);
+      }
+    };
+  };
+  
+  return {
+    servo,
+    led
+  };
 }
 
-export function Servo(pinNumber: number){
-    const port = new SerialPort({path ,baudRate: 57600});
-
-    function setPinServo(){
-        const PIN_MODE_SERVO = 0x04;
-        const PIN = pinNumber;
-        const data =[
-            0xF4,
-            PIN,
-            PIN_MODE_SERVO
-        ]
-
-        port.write(Buffer.from(data),(err)=>{
-            if(err){
-                console.error("Error",err.message)
-            }
-            console.log("Set pin Servo");
-        })
-    }
-
-    function setServoAngle(angle : number){
-        const Pin = pinNumber;
-        const data = [
-            0xE0 | Pin,
-            angle & 0x7F,
-            (angle >> 7) & 0x7F
-        ];
-        port.write(Buffer.from(data),(err)=>{
-            if(err){
-                console.error("Error",err.message)
-            }
-            console.log(`set to Angle ${angle} at pin ${pinNumber}`);
-        })
-
-    }
-
-    function Angle(angle : number){
-        setTimeout(()=>{
-            setPinServo()
-        },3000)
-        
-        setTimeout(()=>{
-            setServoAngle(angle)
-        },3000)
-        
-    }
-    
-    return{
-        Angle,
-    }
-}
+export default setup;

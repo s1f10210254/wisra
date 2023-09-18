@@ -1,17 +1,21 @@
-// // import {SERVO,setup} from './src/sample'
+import setup from "./src/sample";
+const main = async () => {
+    const port = await setup();  
+    const servo1 = port.servo(8);
+    const servo2 = port.servo(9);
+    // const led1 = port.led(13);
 
-// // setup('COM4');
-// import { LED, setup } from "./src/index";
-// // const led = LED(13);
-// setup('COM4')
+    console.log('Start')
+    
+    // other operations...
+    
+        // await led1.on()
+    await servo1.lotate(0);
+    await servo1.lotate(90);
+    await servo1.lotate(180);
+    await servo1.lotate(90);
+    await servo1.lotate(0);
+    
+}
 
-// LED.toString()
-
-import {setup , LED, Servo} from "./src/sample"
-
-setup('COM4')
-// const led = LED(11)
-// led.on()
-
-const servo = Servo(9);
-servo.Angle(0);
+main();
