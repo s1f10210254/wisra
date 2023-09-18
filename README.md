@@ -1,15 +1,15 @@
-# wisra-zu
+# wisra
 このモジュールを使用すると、シリアル通信を介して、Node.jsからArduino上のfirmataに信号を送り、IOTデバイスを制御することができます。
 
 
-### 使用方法
+## Start WISRA
 **1,ArduinoのIDEの設定**
 ```
 File > Examples > Firmata > StandardFirmata
 ```
 にアクセスしてコードをArduinoにアップロードします
 
-**2,install**
+**install**
 ```
 npm install wisra-zu
 ```
@@ -17,7 +17,8 @@ npm install wisra-zu
 
 
 
-### 使用方法
+## 使用方法
+
 **1,まずライブラリをインポートします。**
 ```
 import setup from "wisra";
@@ -46,7 +47,7 @@ main();
 
 ```
 
-**API**
+### API
 **'setup()'**
 Arduino との接続をセットアップします。成功すると、port オブジェクトを返します。 
 
