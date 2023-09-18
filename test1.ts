@@ -91,24 +91,32 @@ const pinNumber = 9;
 port.on('open', () => {
     console.log('Port COM4 opened');
 
-    // RTS信号をクリア
-    port.set({ rts: false }, (err) => {
-        if (err) console.error('Error clearing RTS:', err);
-    });
+    // // RTS信号をクリア
+    // port.set({ rts: false }, (err) => {
+    //     if (err) console.error('Error clearing RTS:', err);
+    // });
 
-    // DTRをセット
-    port.set({ dtr: true }, (err) => {
-        if (err) console.error('Error setting DTR:', err);
-    });
+    // // DTRをセット
+    // port.set({ dtr: true }, (err) => {
+    //     if (err) console.error('Error setting DTR:', err);
+    // });
 
     // データを書き込み
     let data = Buffer.from([0xf0, 0x70, 0x09, 0x20, 0x04, 0x60, 0x12, 0xf7]);
-    setTimeout(()=>{
+    setInterval(()=>{
         port.write(data, (err) => {
-            if (err) console.error('Error writing data:', err);
+            if (err) console.error('Error writing data:', err.message);
         });
     
     },2000)
+
+
+    // setInterval(() => {
+    //     // サーボの角度を0度に設定
+    //     const servoAngleBuffer = Buffer.from([0xe9, 0x00, 0x00]);
+    //     port.write(servoAngleBuffer);
+    //     console.log("Set servo angle to 0");
+    // }, 2000);
     
     // 他の設定やコマンドを追加...
 

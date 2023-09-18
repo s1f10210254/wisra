@@ -1,6 +1,7 @@
 import * as readline from "readline"
 import { SerialPort } from "serialport"
 
+
 let path: string = 'COM3';
 
 export function setup(mypath: string){
@@ -81,7 +82,10 @@ export function LED(pinNumber: number){
     }
 
     function on(){
-        setPinOutput()
+        // setTimeout(()=>{
+        //     setPinOutput()
+        // },2000)
+        // setPinOutput()
 
         setTimeout(()=>{
             onProcess()
@@ -101,5 +105,57 @@ export function LED(pinNumber: number){
         blink,
         on,
         off,
+    }
+}
+
+export function Servo(pinNumber: number){
+    const port = new SerialPort({path ,baudRate: 57600});
+
+    function setPinServo(){
+        const PIN_MODE_SERVO = 0x04;
+        const PIN = pinNumber;
+        const data =[
+            0xF4,
+            PIN,
+            PIN_MODE_SERVO
+        ]
+
+        port.write(Buffer.from(data),(err)=>{
+            if(err){
+                console.error("Error",err.message)
+            }
+            console.log("Set pin Servo");
+        })
+    }
+
+    function setServoAngle(angle : number){
+        const Pin = pinNumber;
+        const data = [
+            0xE0 | Pin,
+            angle & 0x7F,
+            (angle >> 7) & 0x7F
+        ];
+        port.write(Buffer.from(data),(err)=>{
+            if(err){
+                console.error("Error",err.message)
+            }
+            console.log(`set to Angle ${angle} at pin ${pinNumber}`);
+        })
+
+    }
+
+    function Angle(angle : number){
+        setTimeout(()=>{
+            setPinServo()
+        },3000)
+        
+        setTimeout(()=>{
+            setServoAngle(angle)
+        },3000)
+        
+    }
+    
+    return{
+        Angle,
     }
 }

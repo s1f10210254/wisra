@@ -1,6 +1,7 @@
 import * as readline from "readline"
 import { SerialPort } from "serialport"
 
+
 let path: string = 'COM3';
 
 export function setup(mypath: string){
@@ -81,7 +82,10 @@ export function LED(pinNumber: number){
     }
 
     function on(){
-        setPinOutput()
+        // setTimeout(()=>{
+        //     setPinOutput()
+        // },2000)
+        // setPinOutput()
 
         setTimeout(()=>{
             onProcess()
@@ -104,91 +108,54 @@ export function LED(pinNumber: number){
     }
 }
 
-// export function SERVO(pinNumber: number){
-//     const port = new SerialPort({path ,baudRate: 57600});
-    
-//     port.on("open", ()=>{
-//         console.log("Arduino connected");
-//     });
+export function Servo(pinNumber: number){
+    const port = new SerialPort({path ,baudRate: 57600});
 
-//     port.on("error", (err)=>{
-//         console.error("Error", err.message);
-//     })
-//     function configureServo(minPulse: number, maxPulse:number){
-//         const commandByte = 0x70;
-//         const dataByte = [
-//             pinNumber,
-//             minPulse & 0x7F, (minPulse >> 7) & 0x7F,
-//             maxPulse & 0x7F, (maxPulse >> 7) & 0x7F,
-//         ]
-
-//         const buffer = Buffer.from([commandByte, ...dataByte]);
-//         port.write(buffer);
-//     }
-
-//     function setAngle (angle : number){
-//         if (angle < 0) angle = 0;
-//         if (angle > 180) angle = 180;
-
-//         const commandByte = 0xE0 | (pinNumber & 0x0F);
-//         const dataByte = [(angle & 0x7F), (angle >> 7) & 0x7F];
-
-//         const buffer = Buffer.from([commandByte, ...dataByte]);
-//         port.write(buffer, (err)=>{
-//             if(err){
-//                 return console.error("Error writing to port: ",err.message);
-//             }
-//             console.log(`Set Servo at pin ${pinNumber} to angle ${angle} degrees`);
-//         });
-//     }
-//     return {
-//         configureServo,
-//         setAngle
-//     }
-// }
-
-export function SERVO(pinNumber :number){
-    const port = new SerialPort({path, baudRate:57600})
-
-    port.on("open", ()=>{
-        console.log("Arduino connected");
-    })
-    
-    port.on("error", (err)=>{
-        console.error("Error", err);
-    })
-
-    function setPinOutput(){
+    function setPinServo(){
         const PIN_MODE_SERVO = 0x04;
-        const SET_PIN_MODE = 0xF4;
-        const buffer = Buffer.from([SET_PIN_MODE, pinNumber,PIN_MODE_SERVO]);
-        port.write(buffer)
+        const PIN = pinNumber;
+        const data =[
+            0xF4,
+            PIN,
+            PIN_MODE_SERVO
+        ]
+
+        port.write(Buffer.from(data),(err)=>{
+            if(err){
+                console.error("Error",err.message)
+            }
+            console.log("Set pin Servo");
+        })
     }
 
-    function setAngle(angle : number){
-        setPinOutput();
+    function setServoAngle(angle : number){
+        const Pin = pinNumber;
+        const data = [
+            0xE0 | Pin,
+            angle & 0x7F,
+            (angle >> 7) & 0x7F
+        ];
+        port.write(Buffer.from(data),(err)=>{
+            if(err){
+                console.error("Error",err.message)
+            }
+            console.log(`set to Angle ${angle} at pin ${pinNumber}`);
+        })
 
-        const ANALOG_MESSAGE = 0xE4;
-        if(angle < 0) angle = 0;
-        if(angle > 180) angle = 0;
-        const buffer = Buffer.from([ANALOG_MESSAGE | pinNumber, angle & 0x7F, (angle >> 7) & 0x7F])
-        // port.write(buffer);
+    }
+
+    function Angle(angle : number){
         setTimeout(()=>{
-            port.write(buffer, (err)=>{
-                if(err){
-                    return console.error("Error writing to port: ",err.message)
-                }
-                console.log(`Set Servo at pin ${pinNumber} to angle ${angle} degrees`)
-            })
-        },2000)
+            setPinServo()
+        },3000)
+        
+        setTimeout(()=>{
+            setServoAngle(angle)
+        },3000)
+        
     }
-
-    function initialize(){
-        setPinOutput();
-    }
-
-    return {
-        // initialize,
-        setAngle,
+    
+    return{
+        Angle,
     }
 }
