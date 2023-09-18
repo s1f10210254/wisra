@@ -17,38 +17,43 @@ npm install wisra-zu
 
 
 
-### 最初にArduinoのCOMポートをセットアップします。
-*デフォルトのCOMポートはCOM3ですが、異なる場合はsetup関数を使用して変更してください。
-
+### 使用方法
+**1,まずライブラリをインポートします。**
 ```
-import { setup, LED } from 'wisra-zu';
-
-// COMポートをセットアップする
-setup('COM4');  // 例: COM4に変更する場合
+import setup from "wisra";
 ```
 
-### LEDを制御する  
+**2,メイン関数を作成し、サーボモーターやLEDを制御します**
+```
+const main = async () => {
+    const port = await setup();  
+    const servo = port.servo(8);
+    const servo1 = port.servo(9);
+    const led = port.led(13);
 
-**LED を制御するためのインスタンスの作成**
-```
-const led = LED(13);  // ピン13を制御するインスタンスの作成
+    console.log('Start')
+    await led.on();
+    
+    await servo1.lotate(0);
+    await servo1.lotate(90);
+    await servo1.lotate(180);
+    await servo1.lotate(90);
+    await servo1.lotate(0);
+    
+}
+
+main();
+
 ```
 
-**LEDをオンにする**
-```
-led.on();
-```
+**API**
+**'setup()'**
+Arduino との接続をセットアップします。成功すると、port オブジェクトを返します。 
 
-**LEDをオフにする**
-```
-led.off();
-```
+**'port.servo(pin)'**
+指定したピン番号でサーボモーターを制御します。この関数は、lotate メソッドを持つオブジェクトを返します。  
 
-**LEDを点滅させる**
-```
-led.blink(); // デフォルトでは1秒間隔で点滅します。
-led.blink(2000); // 2秒間隔で点滅します。
-```
-
-
-**注意** 'on'や'blink'メソッドを使用すると、エンターキーを押すまでLEDの制御が継続されます。
+**'port.led(pin)'**
+指定したピン番号でLEDを制御します。この関数は、on と off メソッドを持つオブジェクトを返します。  
+*`on()`:LEDを点灯します
+*`off()`:LEDを消灯します

@@ -1,7 +1,7 @@
 import { SerialPort } from "serialport";
-import { setPinServo } from "../src/servo/setPinServo";
+import { setPinServo } from "./components/servo/setPinServo";
 import { findArduinoPath } from "./wisra/findArduinoPath";
-import { setServoAngle } from "../src/servo/setServoAngle";
+import { setServoAngle } from "../src/components/servo/setServoAngle";
 import { delay } from "./wisra/delay";
 import {setLedState} from "./components/LED/led"
 
@@ -44,11 +44,11 @@ const setup = async () => {
     return {
       on: async () => {
         await dataReady;
-        await setLedState(pin, true, port);
+        await setLedState(pin, "on", port);
       },
       off: async () => {
         await dataReady;
-        await setLedState(pin, false, port);
+        await setLedState(pin, "off", port);
       }
     };
   };

@@ -1,8 +1,8 @@
 import { SerialPort } from "serialport";
 import { Mode } from "../../global";
 import { InputMode, OutputMode, PwmMode, ServoMode } from "../types/Mode";
-import { setPinServo } from "../servo/setPinServo"
-import { setServoAngle } from "../servo/setServoAngle"
+import { setPinServo } from "../components/servo/setPinServo"
+import { setServoAngle } from "../components/servo/setServoAngle"
 import { delay } from "./delay";
 
 export const setup = <T extends Mode>(path: string, pin: number, mode: T): 

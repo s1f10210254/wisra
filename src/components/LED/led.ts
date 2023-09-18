@@ -3,10 +3,11 @@ import { findArduinoPath } from "../../wisra/findArduinoPath";
 import { setPinOutput } from "../../wisra/setPinOutput";
 import { bufferOutput } from "../../wisra/bufferOutput";
 import { portClose } from "../../wisra/portClose";
+import * as readline from "readline"
 
-export const setLedState = async ( pin: number, onoff: boolean, port:SerialPort) => {
+export const setLedState = async ( pin: number, action: 'on'|'off'|'blink', port:SerialPort) => {
       const IOMESSAGE = 0x90;
-
+      let ledState: boolean = true
       const on =  async ():Promise<void> => {
         await setPinOutput(pin, port);
         const bufferValue = 1 << (pin & 0x07);
@@ -28,17 +29,27 @@ export const setLedState = async ( pin: number, onoff: boolean, port:SerialPort)
         return;
       };
 
+    //   const blink = async (interval: number =1000):Promise<void>=>{
+    //     setInterval(()=>{
+    //         ledState ? off() : on();
+    //         ledState = !ledState
+    //     },interval)
+    //   }
+
+      
       port.on('data',   (data) => {
         console.log('Data from Arduino:', data);
         // If the last 2 bytes are <Buffer 00 f7>, we can light the LED
 
         const lastTwoBytes = data.slice(-2);
         if (lastTwoBytes.equals(Buffer.from([0x00, 0xf7]))) {
-            if (onoff) {
+            if (action ==="on") {
                 on();
-            } else {
-                off();
-            }       
+            } else if(action ==="off"){
+                off();}
+            // } else if(action ==="blink"){
+            //     blink
+            // }  
         }
       });
     }
