@@ -7,6 +7,9 @@ const main = async () => {
 
     console.log('Start')
     await led.on();
+
+    
+    
     
     
     await servo1.lotate(0);
