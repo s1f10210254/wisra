@@ -6,14 +6,6 @@ import { setServoAngle } from "../src/components/servo/setServoAngle";
 import { delay } from "./wisra/delay";
 import {setLedState} from "./components/LED/led"
 import { resolve } from "path";
-type ContinuousServo = {
-      ForwardRotation :(speed? :number) => Promise<void>;
-      ReverseRotation: (speed? :number) => Promise<void>;
-      stop:() => Promise<void>
-    }
-type StandardServo ={
-      rotate:(angle:number) => Promise<void>
-    }
 const setup = async () => {
     console.log("setup")
     const path = await findArduinoPath()
@@ -77,14 +69,14 @@ const setup = async () => {
     const Rotateservo = (pin: number, rpm: number, tireDiameter: number)=>{
       //タイヤの円周(cm)
       const tireCircumferenceCm = tireDiameter * Math.PI;
+
       //タイヤが1分間に進む距離
       const distancePerMinuteCM = rpm * tireCircumferenceCm;
-
       return {
-        ForwardCM: async(dinstanceCM: number)=>{
+        ForwardCM: async(dinstance: number)=>{
           
           //指定された距離(cm)を進むための時間を計測(1分)
-          const requiredTimeMinutes = (dinstanceCM/ distancePerMinuteCM);
+          const requiredTimeMinutes = (dinstance/ distancePerMinuteCM);
 
           //1分をミリ秒に変換
           const requiredTimeMilliseconds = requiredTimeMinutes * 60 * 10000
@@ -94,7 +86,51 @@ const setup = async () => {
           await new Promise(resolve => setTimeout(resolve, requiredTimeMilliseconds));
           await setServoSpeed(pin, 90, port)
         },
-         
+        ForwardM: async(distanceM: number)=>{
+          const distanceCM = distanceM * 100;
+          
+          //指定された距離(cm)を進むための時間を計測(1分)
+          const requiredTimeMinutes = (distanceCM/ distancePerMinuteCM);
+
+          //1分をミリ秒に変換
+          const requiredTimeMilliseconds = requiredTimeMinutes * 60 * 1000;
+
+          await setPinServo(pin, port);
+          await setServoSpeed(pin, 180, port);
+          await new Promise(resolve => setTimeout(resolve, requiredTimeMilliseconds));
+          await setServoSpeed(pin, 90, port)
+        },
+        BackwardCM: async(dinstance: number)=>{
+          
+          //指定された距離(cm)を進むための時間を計測(1分)
+          const requiredTimeMinutes = (dinstance/ distancePerMinuteCM);
+
+          //1分をミリ秒に変換
+          const requiredTimeMilliseconds = requiredTimeMinutes * 60 * 10000
+
+          await setPinServo(pin,port);
+          await setServoSpeed(pin, 0, port);
+          await new Promise(resolve => setTimeout(resolve, requiredTimeMilliseconds));
+          await setServoSpeed(pin, 90, port)
+        },
+        BackwardM: async(distanceM: number)=>{
+          const distanceCM = distanceM * 100;
+          
+          //指定された距離(cm)を進むための時間を計測(1分)
+          const requiredTimeMinutes = (distanceCM/ distancePerMinuteCM);
+
+          //1分をミリ秒に変換
+          const requiredTimeMilliseconds = requiredTimeMinutes * 60 * 1000;
+
+          await setPinServo(pin, port);
+          await setServoSpeed(pin, 0, port);
+          await new Promise(resolve => setTimeout(resolve, requiredTimeMilliseconds));
+          await setServoSpeed(pin, 90, port)
+        },
+        
+
+
+        
       }
     }
 
