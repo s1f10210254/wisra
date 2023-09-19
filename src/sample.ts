@@ -6,14 +6,6 @@ import { setServoAngle } from "../src/components/servo/setServoAngle";
 import { delay } from "./wisra/delay";
 import {setLedState} from "./components/LED/led"
 import { resolve } from "path";
-type ContinuousServo = {
-      ForwardRotation :(speed? :number) => Promise<void>;
-      ReverseRotation: (speed? :number) => Promise<void>;
-      stop:() => Promise<void>
-    }
-type StandardServo ={
-      rotate:(angle:number) => Promise<void>
-    }
 const setup = async () => {
     console.log("setup")
     const path = await findArduinoPath()
