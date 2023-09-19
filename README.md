@@ -11,7 +11,7 @@ File > Examples > Firmata > StandardFirmata
 
 **install**
 ```
-npm install wisra-zu
+npm install wisra
 ```
 を行いモジュールのインストールを行います。
 

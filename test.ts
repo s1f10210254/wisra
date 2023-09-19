@@ -1,4 +1,5 @@
 import setup from "./src/index";
+import { delay } from "./src/wisra/delay";
 const main = async () => {
     const port = await setup();  
     const servo = port.servo(8);
@@ -7,6 +8,9 @@ const main = async () => {
 
     console.log('Start')
     await led.on();
+
+    
+    
     
     
     await servo1.lotate(0);
