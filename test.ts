@@ -4,8 +4,11 @@ const main = async () => {
     // const servo = port.servo(8);
     // const servo1 = port.servo(9);
     // const led = port.led(13);
-    const rotateservo = port.Rotateservo(9, 55, 4);
-    await rotateservo.Forward(100);
+    const rotateservo = port.Rotateservo(10, 55, 4);
+    const rotateservo1 = port.Rotateservo(9, 55, 4);
+    // await rotateservo.ForwardCM(100);
+    await rotateservo.ForwardM(1);
+    await rotateservo1.ForwardM(1);
 
     // console.log('Start')
     // await led.on();
