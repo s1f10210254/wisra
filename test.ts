@@ -1,5 +1,4 @@
 import setup from "./src/index";
-import { delay } from "./src/wisra/delay";
 const main = async () => {
     const port = await setup();  
     const servo = port.servo(8);
